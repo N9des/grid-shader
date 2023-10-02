@@ -12,6 +12,6 @@
 
 🚨 À FAIRE AVANT DE COMMENCER ! 🚨
 
-<pre><code>git remote rm ThreeStarter</code></pre>
+<pre><code>git remote rm origin</code></pre>
 
-<pre><code>git remote add NAME URL</code></pre>
+<pre><code>git remote add origin URL</code></pre>

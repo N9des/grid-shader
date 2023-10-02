@@ -36,8 +36,11 @@ export default class Sketch {
 		// Init values
 		this.time = 0;
 		this.clock = new THREE.Clock();
-
+		
 		this.render();
+		
+		// Resize
+		window.addEventListener('resize', this.resize.bind(this));
 	}
 
 	addControls() {
@@ -79,6 +82,20 @@ export default class Sketch {
 	addAnim() {
 		const elapsedTime = this.clock.getElapsedTime();
 		// console.log(elapsedTime);
+	}
+
+	resize() {
+		// Update sizes
+    this.sizes.width = window.innerWidth
+    this.sizes.height = window.innerHeight
+
+    // Update camera
+    this.camera.aspect = this.sizes.width / this.sizes.height
+    this.camera.updateProjectionMatrix()
+
+    // Update renderer
+    this.renderer.setSize(this.sizes.width, this.sizes.height)
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 	}
 
 	render() {

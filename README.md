@@ -2,7 +2,7 @@
 
 ## Init starter
 
-<pre><code>yarn i</code></pre>
+<pre><code>yarn install</code></pre>
 
 <pre><code>yarn dev</code></pre>
 

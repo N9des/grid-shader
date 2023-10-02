@@ -14,4 +14,4 @@
 
 <pre><code>git remote rm ThreeStarter</code></pre>
 
-<pre><code>git remote add <name> <url></code></pre>
+<pre><code>git remote add NAME URL</code></pre>

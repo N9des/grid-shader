@@ -11,6 +11,7 @@ export default class Sketch {
 		this.sizes = {
 			width: window.innerWidth,
 			height: window.innerHeight,
+			pixelRatio: Math.min(window.devicePixelRatio, 2)
 		}
 		// Init Renderer
 		this.canvas = document.querySelector('canvas.webgl');
@@ -28,8 +29,6 @@ export default class Sketch {
 		this.addCamera();
 
 		this.addControls();
-
-		this.addLight();
 
 		this.addMesh();
 
@@ -51,12 +50,6 @@ export default class Sketch {
 		this.controls.enableDamping = true
 	}
 
-	addLight() {
-		this.directionalLight = new THREE.DirectionalLight('#ffffff', 3)
-		this.scene.add(this.directionalLight)
-		this.directionalLight.position.set(0, 0, 10)
-	}
-
 	addCamera() {
 		this.camera = new THREE.PerspectiveCamera(
 			50,
@@ -68,103 +61,26 @@ export default class Sketch {
 	}
 
 	addMesh() {
-		// this.geometry = new THREE.PlaneGeometry(1, 1);
-
-		this.customUniforms = {
-			uTime: { value: 0 },
-			uSize: { value: 0.8 },
-			// uResolution: { value: new THREE.Vector2(this.sizes.width, this.sizes.height) },
-		}
-
-		this.gridCol = 92;
-		this.gridRow = 52;
-		this.geometrySize = 0.5;
-		this.gridColSize = this.gridCol * this.geometrySize;
-		this.gridRowSize = this.gridRow * this.geometrySize;
-		this.geometry = new THREE.PlaneGeometry(this.geometrySize, this.geometrySize)
-		this.material = new THREE.MeshPhysicalMaterial({});
-
-		this.material.onBeforeCompile = (shader) => {
-			shader.uniforms = Object.assign(shader.uniforms, this.customUniforms)
-			shader.vertexShader = shader.vertexShader.replace(
-				'#include <common>',
-				`
-					#include <common>
-
-					uniform float uTime;
-
-					varying float vAnim;
-					varying vec2 vUv;
-
-					float cubicInOut(float t) {
-						return t < 0.5
-							? 4.0 * t * t * t
-							: 0.5 * pow(2.0 * t - 2.0, 3.0) + 1.0;
-					}
-				`
-			)
-			shader.vertexShader = shader.vertexShader.replace(
-				'#include <begin_vertex>',
-				`
-					#include <begin_vertex>
-
-					vec4 position = instanceMatrix[3];
-					float toLeft = length(position.x / 50.);
-					vAnim += clamp(sin(uTime * 1.4 - cubicInOut(toLeft)), .45, 1.) + 0.09;
-
-					vUv = uv;
-				`
-			)
-			shader.fragmentShader = shader.fragmentShader.replace(
-				'#include <common>',
-				`
-					#include <common>
-					uniform float uSize;
-					uniform float uTime;
-
-					varying float vAnim;
-					varying vec2 vUv;
-				`
-			)
-			shader.fragmentShader = shader.fragmentShader.replace(
-				'#include <color_fragment>',
-				`
-					float anim = uSize * vAnim;
-					float strength = 1. - step(anim, distance(vUv, vec2(0.5)) + 0.25);
-
-					diffuseColor.rgb = vec3(strength);
-				`
-			)
-		}
-		
-
-
-		this.mesh = new THREE.InstancedMesh(this.geometry, this.material, this.gridCol * this.gridRow);
-		this.scene.add(this.mesh);
-
-		let dummy = new THREE.Object3D();
-		let i = 0;
-		let w = 1.4;
-		for(let x = 0; x < this.gridCol; x++)
-			for(let y = 0; y < this.gridRow; y++) {
-				dummy.position.set( 
-					w*(x * this.geometrySize - this.gridColSize/2 + this.geometrySize / 2.),
-					w*(y * this.geometrySize - this.gridRowSize/2 + this.geometrySize / 2.),
-					0,
-				);
-
-				dummy.updateMatrix();
-				this.mesh.setMatrixAt(i, dummy.matrix);
-				i++;
+		this.particlesGeometry = new THREE.PlaneGeometry(55, 30, 120, 70)
+		this.particlesMaterial = new THREE.ShaderMaterial({
+			vertexShader: vertexShader,
+    	fragmentShader: fragmentShader,
+			uniforms: {
+				uTime: { value: 0 },
+				uSize: { value: 0.4 },
+				uResolution: new THREE.Uniform(new THREE.Vector2(this.sizes.width * this.sizes.pixelRatio, this.sizes.height * this.sizes.pixelRatio)),
 			}
-		this.mesh.instanceMatrix.needsUpdate = true;
-		this.mesh.computeBoundingSphere();
+		});
+
+
+		this.mesh = new THREE.Points(this.particlesGeometry, this.particlesMaterial);
+		this.scene.add(this.mesh);
 	}
 
 	addDebug() {
 		const gui = new dat.GUI();
-		gui.add(this.customUniforms.uSize, 'value').min(0).max(1).step(0.0001).name('Dot Size').onChange(value => {
-			this.customUniforms.uSize.value = value
+		gui.add(this.particlesMaterial.uniforms.uSize, 'value').min(0).max(1).step(0.001).name('Particles sizes').onChange(value => {
+			this.particlesMaterial.uniforms.uSize.value = value
 		})
 	}
 
@@ -172,21 +88,21 @@ export default class Sketch {
 		const elapsedTime = this.clock.getElapsedTime();
 
 		// Update time
-		this.customUniforms.uTime.value = elapsedTime;
+		this.particlesMaterial.uniforms.uTime.value = elapsedTime;
 	}
 
 	resize() {
 		// Update sizes
     this.sizes.width = window.innerWidth
     this.sizes.height = window.innerHeight
+		this.sizes.pixelRatio = Math.min(window.devicePixelRatio, 2)
 
     // Update camera
     this.camera.aspect = this.sizes.width / this.sizes.height
     this.camera.updateProjectionMatrix()
 
-		// Resize geometry
-		// this.planeFitPerspectiveCamera(this.mesh, this.camera);
-		// this.material.uniforms.uResolution.value.set(this.sizes.width, this.sizes.height);
+		 // Materials
+		 this.particlesMaterial.uniforms.uResolution.value.set(this.sizes.width * this.sizes.pixelRatio, this.sizes.height * this.sizes.pixelRatio)
 
     // Update renderer
     this.renderer.setSize(this.sizes.width, this.sizes.height)

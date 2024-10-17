@@ -22,6 +22,6 @@ void main() {
 
 		// Wave
 		// float toLeft = length(gl_Position.x / 50.);
-		float toLeft = length(gl_Position.x) + length(gl_Position.y);
+		float toLeft = length(gl_Position.x) / length(gl_Position.y);
 		uWave += clamp(sin(uTime * 1.4 - cubicInOut(toLeft)), -0.2, 1.) + 1.08;
 }

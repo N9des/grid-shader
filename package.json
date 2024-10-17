@@ -12,10 +12,12 @@
     "vite": "^4.4.5"
   },
   "dependencies": {
+    "glsl-easings": "^1.0.0",
     "lil-gui": "^0.18.2",
     "prettier": "^3.0.3",
     "sass": "^1.68.0",
     "three": "^0.156.1",
-    "vite-plugin-glsl": "^1.1.2"
+    "vite-plugin-glsl": "^1.1.2",
+    "vite-plugin-glslify": "^2.1.0"
   }
 }

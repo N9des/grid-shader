@@ -1,4 +1,5 @@
 import glsl from 'vite-plugin-glsl';
+import {glslify} from 'vite-plugin-glslify'
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -14,6 +15,6 @@ export default defineConfig({
       sourcemap: true
     },
     plugins: [
-      glsl()
+      glslify()
     ]
 });

@@ -72,7 +72,7 @@ export default class Sketch {
 
 		this.customUniforms = {
 			uTime: { value: 0 },
-			uSize: { value: 0.8 }
+			uSize: { value: 0.8 },
 			// uResolution: { value: new THREE.Vector2(this.sizes.width, this.sizes.height) },
 		}
 
@@ -90,7 +90,9 @@ export default class Sketch {
 				'#include <common>',
 				`
 					#include <common>
+
 					uniform float uTime;
+
 					varying float vAnim;
 					varying vec2 vUv;
 

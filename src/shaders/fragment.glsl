@@ -2,11 +2,12 @@ uniform float uSize;
 uniform float uTime;
 uniform sampler2D uDisplacementTexture;
 
-// Testing
+// GUI
 uniform bool uAnim;
 
 varying float uWave;
 varying vec2 vUv;
+varying float vPictureIntensity;
 
 void main() {
 	// Displacement
@@ -15,7 +16,7 @@ void main() {
 
 	vec2 uv = gl_PointCoord;
 	float distanceToCenter = length(uv - vec2(0.5));
-	float wave = uSize;
+	float wave = uSize + vPictureIntensity;
 	if (uAnim) {
 		wave *= uWave;
 	}

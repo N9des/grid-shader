@@ -1,13 +1,20 @@
 uniform vec2 uResolution;
 uniform float uTime;
 
-// Testing
+// Picture Textures
+uniform sampler2D uTexture01;
+uniform sampler2D uTexture02;
+uniform sampler2D uTexture03;
+uniform float uSelectedTexture;
+
+// GUI
 uniform float uFrequencyXWaves;
 uniform float uFrequencyYWaves;
 uniform bool uYAddition;
 
 varying float uWave;
 varying vec2 vUv;
+varying float vPictureIntensity;
 
 float cubicInOut(float t) {
 	return t < 0.5
@@ -20,6 +27,17 @@ void main() {
     vec4 viewPosition = viewMatrix * modelPosition;
     vec4 projectedPosition = projectionMatrix * viewPosition;
     gl_Position = projectedPosition;
+
+		// Picture texture
+		float pictureIntensity;
+
+		if (uSelectedTexture == 1.) {
+			pictureIntensity = texture(uTexture01, uv).r;
+		} else if (uSelectedTexture == 2.) {
+			pictureIntensity = texture(uTexture02, uv).r;
+		} else {
+			pictureIntensity = texture(uTexture03, uv).r;
+		}
 
     // Point size
     gl_PointSize = 0.4 * uResolution.y;
@@ -46,5 +64,7 @@ void main() {
 
 		uWave += clamp(sin(uTime * 1.4 + direction), -0.2, 1.) + 1.08;
 
+		// Varying
+		vPictureIntensity = pow(pictureIntensity, 1.5);
 		vUv = uv;
 }

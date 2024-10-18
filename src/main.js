@@ -26,6 +26,8 @@ export default class Sketch {
 		// Init scene
 		this.scene = new THREE.Scene();
 
+		this.textureLoader = new THREE.TextureLoader()
+
 		this.addCamera();
 
 		this.addControls();
@@ -146,7 +148,11 @@ export default class Sketch {
 				uFrequencyYWaves: { value: 0 },
 				uYAddition: { value: false },
 				uResolution: new THREE.Uniform(new THREE.Vector2(this.sizes.width * this.sizes.pixelRatio, this.sizes.height * this.sizes.pixelRatio)),
-				uDisplacementTexture: new THREE.Uniform(this.displacement.texture)
+				uDisplacementTexture: new THREE.Uniform(this.displacement.texture),
+				uTexture01: new THREE.Uniform(this.textureLoader.load('./images/picture-01.png')),
+				uTexture02: new THREE.Uniform(this.textureLoader.load('./images/picture-02.png')),
+				uTexture03: new THREE.Uniform(this.textureLoader.load('./images/picture-03.png')),
+				uSelectedTexture: { value: 1 }
 			},
 		});
 
@@ -156,22 +162,34 @@ export default class Sketch {
 
 	addDebug() {
 		const gui = new dat.GUI();
-		gui.add(this.particlesMaterial.uniforms.uSize, 'value').min(0).max(1).step(0.001).name('Particles sizes').onChange(value => {
+		const sizeFolder = gui.addFolder( 'Size Particles' );
+		sizeFolder.add(this.particlesMaterial.uniforms.uSize, 'value').min(0).max(1).step(0.001).name('Particles sizes').onChange(value => {
 			this.particlesMaterial.uniforms.uSize.value = value
 		})
-		gui.add(this.particlesMaterial.uniforms.uAnim, 'value').name('Waves animation').onChange(value => {
+		const animationFolder = gui.addFolder( 'Animation' );
+		animationFolder.add(this.particlesMaterial.uniforms.uAnim, 'value').name('Waves animation').onChange(value => {
 			this.particlesMaterial.uniforms.uAnim.value = value;
 		})
-		gui.add(this.particlesMaterial.uniforms.uFrequencyXWaves, 'value').name('Waves X Frenquency').min(0).max(100).step(0.001).onChange(value => {
+		animationFolder.add(this.particlesMaterial.uniforms.uFrequencyXWaves, 'value').name('Waves X Frenquency').min(0).max(100).step(0.001).onChange(value => {
 			this.particlesMaterial.uniforms.uFrequencyXWaves.value = value;
 		})
-		gui.add(this.particlesMaterial.uniforms.uFrequencyYWaves, 'value').name('Waves Y Frenquency').min(0).max(100).step(0.001).onChange(value => {
+		animationFolder.add(this.particlesMaterial.uniforms.uFrequencyYWaves, 'value').name('Waves Y Frenquency').min(0).max(100).step(0.001).onChange(value => {
 			this.particlesMaterial.uniforms.uFrequencyYWaves.value = value;
 		})
-		gui.add(this.particlesMaterial.uniforms.uYAddition, 'value').name('Waves Y Addition').onChange(value => {
+		animationFolder.add(this.particlesMaterial.uniforms.uYAddition, 'value').name('Waves Y Addition').onChange(value => {
 			this.particlesMaterial.uniforms.uYAddition.value = value;
 		})
-		gui.add(this.displacement.glowSize.multipler, 'value').name('Cursor Size Multiplier').min(0).max(1).step(0.001)
+		const cursorFolder = gui.addFolder('Cursor');
+		cursorFolder.add(this.displacement.glowSize.multipler, 'value').name('Cursor Size Multiplier').min(0).max(1).step(0.001)
+
+		// Dropdown
+		const textureFolder = gui.addFolder('Pictures');
+		const dropdown = { texture: 'Picture' }
+		textureFolder.add(dropdown, 'texture', [ 1, 2, 3]).name('Pictures').onFinishChange(
+			(value) => {
+				this.particlesMaterial.uniforms.uSelectedTexture.value = value
+			}
+		)
 	}
 
 	addAnim() {

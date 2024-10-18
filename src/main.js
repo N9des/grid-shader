@@ -152,7 +152,9 @@ export default class Sketch {
 				uTexture01: new THREE.Uniform(this.textureLoader.load('./images/picture-01.png')),
 				uTexture02: new THREE.Uniform(this.textureLoader.load('./images/picture-02.png')),
 				uTexture03: new THREE.Uniform(this.textureLoader.load('./images/picture-03.png')),
-				uSelectedTexture: { value: 1 },
+				uTexture04: new THREE.Uniform(this.textureLoader.load('./images/picture-04.png')),
+				uTexture05: new THREE.Uniform(this.textureLoader.load('./images/picture-05.png')),
+				uSelectedTexture: { value: 5 },
 				uPictureIntensityMultipler: { value: 1.5 }
 			},
 		});
@@ -186,12 +188,12 @@ export default class Sketch {
 		// Dropdown
 		const textureFolder = gui.addFolder('Pictures');
 		const dropdown = { texture: 'Picture' }
-		textureFolder.add(dropdown, 'texture', [ 1, 2, 3]).name('Pictures').onFinishChange(
+		textureFolder.add(dropdown, 'texture', [ 0, 1, 2, 3, 4, 5 ]).name('Pictures').onFinishChange(
 			(value) => {
 				this.particlesMaterial.uniforms.uSelectedTexture.value = value
 			}
 		)
-		textureFolder.add(this.particlesMaterial.uniforms.uPictureIntensityMultipler, 'value').min(0).max(1.5).step(0.0001).name('Picture intensity multipler').onChange(
+		textureFolder.add(this.particlesMaterial.uniforms.uPictureIntensityMultipler, 'value').min(0).max(5).step(0.0001).name('Picture intensity multipler').onChange(
 			value => {
 				this.particlesMaterial.uniforms.uPictureIntensityMultipler.value = value
 			}

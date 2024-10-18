@@ -5,6 +5,8 @@ uniform float uTime;
 uniform sampler2D uTexture01;
 uniform sampler2D uTexture02;
 uniform sampler2D uTexture03;
+uniform sampler2D uTexture04;
+uniform sampler2D uTexture05;
 uniform float uSelectedTexture;
 uniform float uPictureIntensityMultipler;
 
@@ -36,8 +38,14 @@ void main() {
 			pictureIntensity = texture(uTexture01, uv).r;
 		} else if (uSelectedTexture == 2.) {
 			pictureIntensity = texture(uTexture02, uv).r;
-		} else {
+		} else if (uSelectedTexture == 3.) {
 			pictureIntensity = texture(uTexture03, uv).r;
+		} else if (uSelectedTexture == 4.) {
+			pictureIntensity = texture(uTexture04, uv).r;
+		} else if (uSelectedTexture == 5.) {
+			pictureIntensity = texture(uTexture05, uv).r;
+		} else {
+			pictureIntensity = 0.;
 		}
 
     // Point size

@@ -60,8 +60,64 @@ export default class Sketch {
 		this.camera.position.z = 50;
 	}
 
+	addDisplacement() {
+		// Displacements
+		this.displacement = {}
+
+		// 2D canvas
+		this.displacement.canvas = document.createElement('canvas')
+		this.displacement.canvas.width = 128
+		this.displacement.canvas.height = 128
+		this.displacement.canvas.style.position = 'fixed'
+		this.displacement.canvas.style.width = '256px'
+		this.displacement.canvas.style.height = '256px'
+		this.displacement.canvas.style.top = 0
+		this.displacement.canvas.style.left = 0
+		this.displacement.canvas.style.zIndex = 10
+		document.body.append(this.displacement.canvas)
+
+		// Context
+		this.displacement.context = this.displacement.canvas.getContext('2d')
+		this.displacement.context.fillRect(0, 0, this.displacement.canvas.width, this.displacement.canvas.height)
+
+		// Glow image
+		this.displacement.glowImage = new Image()
+		this.displacement.glowImage.src = './images/glow.png'
+
+		// Interactive plane
+		this.displacement.interactivePlane = new THREE.Mesh(
+			new THREE.PlaneGeometry(55, 30),
+			new THREE.MeshBasicMaterial({
+				color: 'red'
+			})
+		)
+		this.displacement.interactivePlane.visible = false
+		this.scene.add(this.displacement.interactivePlane)
+
+		// Raycaster
+		this.displacement.raycaster = new THREE.Raycaster()
+
+		// Coordinates
+		this.displacement.screenCursor = new THREE.Vector2(9999, 9999)
+		this.displacement.canvasCursor = new THREE.Vector2(9999, 9999)
+		this.displacement.canvasCursorPrevious = new THREE.Vector2(9999, 9999)
+
+		window.addEventListener('pointermove', (e) => {
+			this.displacement.screenCursor.x = (e.clientX / this.sizes.width) * 2 - 1
+			this.displacement.screenCursor.y = -(e.clientY / this.sizes.height * 2 - 1)
+		})
+
+		/**
+		 * Texture
+		 */
+		this.displacement.texture = new THREE.CanvasTexture(this.displacement.canvas)
+	}
+
 	addMesh() {
-		this.particlesGeometry = new THREE.PlaneGeometry(55, 30, 120, 70)
+		this.addDisplacement()
+
+		// Mesh
+		this.particlesGeometry = new THREE.PlaneGeometry(55, 30, 96, 56)
 		this.particlesMaterial = new THREE.ShaderMaterial({
 			vertexShader: vertexShader,
     	fragmentShader: fragmentShader,
@@ -69,7 +125,8 @@ export default class Sketch {
 				uTime: { value: 0 },
 				uSize: { value: 0.4 },
 				uResolution: new THREE.Uniform(new THREE.Vector2(this.sizes.width * this.sizes.pixelRatio, this.sizes.height * this.sizes.pixelRatio)),
-			}
+				uDisplacementTexture: new THREE.Uniform(this.displacement.texture)
+			},
 		});
 
 
@@ -114,6 +171,44 @@ export default class Sketch {
 
 		// Update controls
     this.controls.update();
+
+		// Update raycaster
+		this.displacement.raycaster.setFromCamera(this.displacement.screenCursor, this.camera)
+		const intersections = this.displacement.raycaster.intersectObject(this.displacement.interactivePlane)
+
+		if (intersections.length > 0) {
+			const uv = intersections[0].uv
+			this.displacement.canvasCursor.x = uv.x * this.displacement.canvas.width
+			this.displacement.canvasCursor.y = (1 - uv.y) * this.displacement.canvas.height
+		}
+
+		/**
+		 * Displacement
+		 */
+		// Fade Out
+		this.displacement.context.globalCompositeOperation = 'source-over'
+		this.displacement.context.globalAlpha = 0.02
+		this.displacement.context.fillRect(0, 0, this.displacement.canvas.width, this.displacement.canvas.height)
+
+		// Speed Alpha
+		const cursorDistance = this.displacement.canvasCursorPrevious.distanceTo(this.displacement.canvasCursor)
+		this.displacement.canvasCursorPrevious.copy(this.displacement.canvasCursor)
+		const alpha = Math.min(cursorDistance * 0.1, 1)
+
+		// Draw glow
+		const glowSize = this.displacement.canvas.width * 0.25
+		this.displacement.context.globalCompositeOperation = 'lighten'
+		this.displacement.context.globalAlpha = alpha
+		this.displacement.context.drawImage(
+			this.displacement.glowImage,
+			this.displacement.canvasCursor.x - glowSize * 0.5,
+			this.displacement.canvasCursor.y - glowSize * 0.5,
+			glowSize,
+			glowSize
+		)
+
+		// Texture
+		this.displacement.texture.needsUpdate = true
 
 		this.renderer.render(this.scene, this.camera, 10);
 		window.requestAnimationFrame(this.render.bind(this));

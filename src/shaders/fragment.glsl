@@ -2,6 +2,9 @@ uniform float uSize;
 uniform float uTime;
 uniform sampler2D uDisplacementTexture;
 
+// Testing
+uniform bool uAnim;
+
 varying float uWave;
 varying vec2 vUv;
 
@@ -12,7 +15,10 @@ void main() {
 
 	vec2 uv = gl_PointCoord;
 	float distanceToCenter = length(uv - vec2(0.5));
-	float wave = uSize * uWave;
+	float wave = uSize;
+	if (uAnim) {
+		wave *= uWave;
+	}
 	float strength = 1. - step(wave+displacementIntensity, distanceToCenter + 0.25);
 
 	gl_FragColor = vec4(vec3(strength), 1.0);

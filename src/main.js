@@ -88,7 +88,7 @@ export default class Sketch {
 		 * Glow image
 		 */
 		this.displacement.glowImage = new Image()
-		this.displacement.glowImage.src = './images/glow.png'
+		this.displacement.glowImage.src = './images/glow-2.png'
 
 		/**
 		 * Interactive plane
@@ -138,6 +138,10 @@ export default class Sketch {
 			uniforms: {
 				uTime: { value: 0 },
 				uSize: { value: 0.4 },
+				uAnim: { value: false },
+				uFrequencyXWaves: { value: 10 },
+				uFrequencyYWaves: { value: 0 },
+				uYAddition: { value: false },
 				uResolution: new THREE.Uniform(new THREE.Vector2(this.sizes.width * this.sizes.pixelRatio, this.sizes.height * this.sizes.pixelRatio)),
 				uDisplacementTexture: new THREE.Uniform(this.displacement.texture)
 			},
@@ -151,6 +155,18 @@ export default class Sketch {
 		const gui = new dat.GUI();
 		gui.add(this.particlesMaterial.uniforms.uSize, 'value').min(0).max(1).step(0.001).name('Particles sizes').onChange(value => {
 			this.particlesMaterial.uniforms.uSize.value = value
+		})
+		gui.add(this.particlesMaterial.uniforms.uAnim, 'value').name('Waves animation').onChange(value => {
+			this.particlesMaterial.uniforms.uAnim.value = value;
+		})
+		gui.add(this.particlesMaterial.uniforms.uFrequencyXWaves, 'value').name('Waves X Frenquency').min(0).max(100).step(0.001).onChange(value => {
+			this.particlesMaterial.uniforms.uFrequencyXWaves.value = value;
+		})
+		gui.add(this.particlesMaterial.uniforms.uFrequencyYWaves, 'value').name('Waves Y Frenquency').min(0).max(100).step(0.001).onChange(value => {
+			this.particlesMaterial.uniforms.uFrequencyYWaves.value = value;
+		})
+		gui.add(this.particlesMaterial.uniforms.uYAddition, 'value').name('Waves Y Addition').onChange(value => {
+			this.particlesMaterial.uniforms.uYAddition.value = value;
 		})
 	}
 

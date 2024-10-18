@@ -1,6 +1,11 @@
 uniform vec2 uResolution;
 uniform float uTime;
 
+// Testing
+uniform float uFrequencyXWaves;
+uniform float uFrequencyYWaves;
+uniform bool uYAddition;
+
 varying float uWave;
 varying vec2 vUv;
 
@@ -21,7 +26,24 @@ void main() {
     gl_PointSize *= (1.0 / - viewPosition.z);
 
 		// Wave	
-		float direction = length(uv.x * 10.);
+		float direction;
+
+		if (uFrequencyXWaves > 0.) {
+			direction = length(uv.x * uFrequencyXWaves);
+		}
+
+		if (uFrequencyYWaves > 0. && !uYAddition && uFrequencyXWaves == 0.) {
+			direction = length(uv.y * uFrequencyYWaves);
+		} else if (uFrequencyYWaves > 0. && !uYAddition && uFrequencyXWaves > 0.) {
+			direction *= length(uv.y * uFrequencyYWaves);
+		} else if (uFrequencyYWaves > 0. && uYAddition) {
+			if (uYAddition) {
+				direction *= length(uv.y + uFrequencyYWaves);
+			} else {
+				direction *= length(uv.y * uFrequencyYWaves);
+			}
+		}
+
 		uWave += clamp(sin(uTime * 1.4 + direction), -0.2, 1.) + 1.08;
 
 		vUv = uv;

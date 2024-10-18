@@ -89,6 +89,9 @@ export default class Sketch {
 		 */
 		this.displacement.glowImage = new Image()
 		this.displacement.glowImage.src = './images/glow-2.png'
+		this.displacement.glowSize = {
+			multipler: { value: 0.25 }
+		}
 
 		/**
 		 * Interactive plane
@@ -168,6 +171,7 @@ export default class Sketch {
 		gui.add(this.particlesMaterial.uniforms.uYAddition, 'value').name('Waves Y Addition').onChange(value => {
 			this.particlesMaterial.uniforms.uYAddition.value = value;
 		})
+		gui.add(this.displacement.glowSize.multipler, 'value').name('Cursor Size Multiplier').min(0).max(1).step(0.001)
 	}
 
 	addAnim() {
@@ -227,7 +231,7 @@ export default class Sketch {
 		const alpha = Math.min(cursorDistance * 0.1, 1)
 
 		// Draw glow
-		const glowSize = this.displacement.canvas.width * 0.25
+		const glowSize = this.displacement.canvas.width * this.displacement.glowSize.multipler.value
 		this.displacement.context.globalCompositeOperation = 'lighten'
 		this.displacement.context.globalAlpha = alpha
 		this.displacement.context.drawImage(

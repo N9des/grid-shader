@@ -21,9 +21,8 @@ void main() {
     gl_PointSize *= (1.0 / - viewPosition.z);
 
 		// Wave	
-		float toLeft = length((uv.x * 10.) * (uv.y * 4.));
-		// float toLeft = length(gl_Position.x) / length(gl_Position.y);
-		uWave += clamp(sin(uTime * 1.4 + toLeft), -0.2, 1.) + 1.08;
+		float direction = length(uv.x * 10.);
+		uWave += clamp(sin(uTime * 1.4 + direction), -0.2, 1.) + 1.08;
 
 		vUv = uv;
 }

@@ -64,7 +64,9 @@ export default class Sketch {
 		// Displacements
 		this.displacement = {}
 
-		// 2D canvas
+		/**
+		 * 2D canvas
+		 */
 		this.displacement.canvas = document.createElement('canvas')
 		this.displacement.canvas.width = 128
 		this.displacement.canvas.height = 128
@@ -76,15 +78,21 @@ export default class Sketch {
 		this.displacement.canvas.style.zIndex = 10
 		document.body.append(this.displacement.canvas)
 
-		// Context
+		/**
+		 * Context
+		 */
 		this.displacement.context = this.displacement.canvas.getContext('2d')
 		this.displacement.context.fillRect(0, 0, this.displacement.canvas.width, this.displacement.canvas.height)
 
-		// Glow image
+		/**
+		 * Glow image
+		 */
 		this.displacement.glowImage = new Image()
 		this.displacement.glowImage.src = './images/glow.png'
 
-		// Interactive plane
+		/**
+		 * Interactive plane
+		 */
 		this.displacement.interactivePlane = new THREE.Mesh(
 			new THREE.PlaneGeometry(55, 30),
 			new THREE.MeshBasicMaterial({
@@ -94,10 +102,14 @@ export default class Sketch {
 		this.displacement.interactivePlane.visible = false
 		this.scene.add(this.displacement.interactivePlane)
 
-		// Raycaster
+		/*
+		 * Raycaster
+		 */
 		this.displacement.raycaster = new THREE.Raycaster()
 
-		// Coordinates
+		/**
+		 * Coordinates
+		 */
 		this.displacement.screenCursor = new THREE.Vector2(9999, 9999)
 		this.displacement.canvasCursor = new THREE.Vector2(9999, 9999)
 		this.displacement.canvasCursorPrevious = new THREE.Vector2(9999, 9999)
@@ -116,7 +128,9 @@ export default class Sketch {
 	addMesh() {
 		this.addDisplacement()
 
-		// Mesh
+		/**
+		 * Mesh
+		 */
 		this.particlesGeometry = new THREE.PlaneGeometry(55, 30, 96, 56)
 		this.particlesMaterial = new THREE.ShaderMaterial({
 			vertexShader: vertexShader,
@@ -128,7 +142,6 @@ export default class Sketch {
 				uDisplacementTexture: new THREE.Uniform(this.displacement.texture)
 			},
 		});
-
 
 		this.mesh = new THREE.Points(this.particlesGeometry, this.particlesMaterial);
 		this.scene.add(this.mesh);
@@ -172,7 +185,9 @@ export default class Sketch {
 		// Update controls
     this.controls.update();
 
-		// Update raycaster
+		/**
+		 * Update raycaster
+		 */
 		this.displacement.raycaster.setFromCamera(this.displacement.screenCursor, this.camera)
 		const intersections = this.displacement.raycaster.intersectObject(this.displacement.interactivePlane)
 
@@ -210,6 +225,9 @@ export default class Sketch {
 		// Texture
 		this.displacement.texture.needsUpdate = true
 
+		/**
+		 * Update Renderer
+		 */
 		this.renderer.render(this.scene, this.camera, 10);
 		window.requestAnimationFrame(this.render.bind(this));
 	}

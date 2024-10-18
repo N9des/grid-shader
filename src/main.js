@@ -152,7 +152,8 @@ export default class Sketch {
 				uTexture01: new THREE.Uniform(this.textureLoader.load('./images/picture-01.png')),
 				uTexture02: new THREE.Uniform(this.textureLoader.load('./images/picture-02.png')),
 				uTexture03: new THREE.Uniform(this.textureLoader.load('./images/picture-03.png')),
-				uSelectedTexture: { value: 1 }
+				uSelectedTexture: { value: 1 },
+				uPictureIntensityMultipler: { value: 1.5 }
 			},
 		});
 
@@ -188,6 +189,11 @@ export default class Sketch {
 		textureFolder.add(dropdown, 'texture', [ 1, 2, 3]).name('Pictures').onFinishChange(
 			(value) => {
 				this.particlesMaterial.uniforms.uSelectedTexture.value = value
+			}
+		)
+		textureFolder.add(this.particlesMaterial.uniforms.uPictureIntensityMultipler, 'value').min(0).max(1.5).step(0.0001).name('Picture intensity multipler').onChange(
+			value => {
+				this.particlesMaterial.uniforms.uPictureIntensityMultipler.value = value
 			}
 		)
 	}

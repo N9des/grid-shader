@@ -6,6 +6,7 @@ uniform sampler2D uTexture01;
 uniform sampler2D uTexture02;
 uniform sampler2D uTexture03;
 uniform float uSelectedTexture;
+uniform float uPictureIntensityMultipler;
 
 // GUI
 uniform float uFrequencyXWaves;
@@ -65,6 +66,6 @@ void main() {
 		uWave += clamp(sin(uTime * 1.4 + direction), -0.2, 1.) + 1.08;
 
 		// Varying
-		vPictureIntensity = pow(pictureIntensity, 1.5);
+		vPictureIntensity = pow(pictureIntensity, uPictureIntensityMultipler);
 		vUv = uv;
 }

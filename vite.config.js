@@ -5,7 +5,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
 	root: 'src/',
     publicDir: '../static/',
-    base: './',
+    base: "/grid-shader/",
     server: {
         host: true,
     },
